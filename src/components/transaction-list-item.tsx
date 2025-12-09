@@ -1,23 +1,25 @@
 import { useDrag } from "@use-gesture/react";
 import { useState } from "react";
 import { Button } from "react-aria-components";
-import type { TransactionRecord } from "../functions";
+import { deleteTransactionMutation } from "../db/mutation";
+import type { TransactionRecord } from "../db/tx-repo";
+import { useStore } from "../hooks/useStore";
 import { cn } from "../utils/cn";
 
 type Props = {
 	data: TransactionRecord;
 	className?: string;
-	onDelete: () => void;
 };
 
-export function TransactionListItem({ data, className, onDelete }: Props) {
-	const max = 80; // 露出幅(px)
+export function TransactionListItem({ data, className }: Props) {
+	const max = 80;
 	const [x, setX] = useState(0);
 	const [isDeleting, setIsDeleting] = useState(false);
+	const { setTransactions, setSummary } = useStore();
 
 	const bind = useDrag(
 		({ active, movement: [mx, my], last, cancel }) => {
-			// 縦スクロール優先（最小ガード）
+			// 縦スクロールを妨げないようにする
 			if (active && Math.abs(my) > Math.abs(mx)) {
 				cancel?.();
 				return;
@@ -36,6 +38,13 @@ export function TransactionListItem({ data, className, onDelete }: Props) {
 		},
 	);
 
+	async function handleDelete(id: number) {
+		const { txId, summary } = await deleteTransactionMutation(id);
+
+		setTransactions((prev) => prev.filter((tx) => tx.id !== txId));
+		setSummary(summary);
+	}
+
 	return (
 		<div
 			className={cn(
@@ -44,7 +53,7 @@ export function TransactionListItem({ data, className, onDelete }: Props) {
 			)}
 			onTransitionEnd={(e) => {
 				if (isDeleting && e.propertyName === "opacity") {
-					void onDelete();
+					void handleDelete(data.id);
 				}
 			}}
 		>
