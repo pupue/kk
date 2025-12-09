@@ -1,4 +1,10 @@
 pre-commit:
-  commands:
-    biome:
-      run: npx biome check {staged_files}
+  parallel: false
+  jobs:
+    - name: biome
+      glob: "**/*.{ts,tsx,json,css,scss,html}"
+      run: npx biome check --write --unsafe {staged_files}
+      stage_fixed: true
+
+    - name: tsc
+      run: npx tsc -p tsconfig.json --noEmit
