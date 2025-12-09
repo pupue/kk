@@ -6,6 +6,7 @@ export type TransactionRecord = {
 	id: number;
 	type: TransactionType;
 	amount: number;
+	category: string;
 	createdAt: number;
 };
 

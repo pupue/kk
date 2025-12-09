@@ -1,5 +1,4 @@
 import type { TransactionRecord } from "../db/tx-repo";
-import { cn } from "../utils/cn";
 import { TransactionListItem } from "./transaction-list-item";
 
 type Props = {
@@ -11,12 +10,8 @@ export function TransactionList({ data }: Props) {
 			{data.length === 0 ? (
 				<p className="p-4 text-center text-sm">まだ何もありません</p>
 			) : (
-				data.map((record, i) => (
-					<TransactionListItem
-						key={record.id}
-						data={record}
-						className={cn(i % 2 === 0 ? "bg-slate-50" : "bg-white")}
-					/>
+				data.map((record) => (
+					<TransactionListItem key={record.id} data={record} />
 				))
 			)}
 		</div>
