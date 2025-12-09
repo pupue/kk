@@ -7,7 +7,7 @@ import { getTransactions } from "./functions/index.ts";
 const data = await getTransactions();
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <App data={data} />
-  </StrictMode>
+	<StrictMode>
+		<App data={data} />
+	</StrictMode>,
 );
