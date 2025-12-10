@@ -1,19 +1,12 @@
-import { SendHorizontal } from "lucide-react";
 import { useState } from "react";
-import {
-	Button,
-	FieldError,
-	Form,
-	Input,
-	Radio,
-	RadioGroup,
-	TextField,
-} from "react-aria-components";
+import { Form } from "react-aria-components";
 import { addTransactionMutation } from "../db/mutation";
 import { parseAmountToNumber, type TransactionType } from "../db/tx-repo";
 import { useStore } from "../hooks/useStore";
-import { cn } from "../utils/cn";
+import { CategoryPicker } from "./category-picker";
 import { TypeSwitcher } from "./type-switcher";
+import { CustomInput } from "./ui/custom-input";
+import { SubmitButton } from "./ui/submit-button";
 
 export function TransactionForm() {
 	const { setTransactions, setSummary, categories } = useStore();
@@ -39,10 +32,10 @@ export function TransactionForm() {
 		setSummary(summary);
 	}
 
-	const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+	const [selectedCategory, setSelectedCategory] = useState<string>("");
 	function handleChangeType(next: TransactionType) {
 		setSelectedTransactionType(next);
-		setSelectedCategory(null);
+		setSelectedCategory("");
 	}
 
 	const filteredCategories = categories.filter(
@@ -60,48 +53,22 @@ export function TransactionForm() {
 			/>
 
 			{selectedTransactionType !== "saving" && (
-				<div className="flex gap-2 overflow-x-scroll">
-					<RadioGroup
-						value={selectedCategory ?? undefined}
-						onChange={(v) => setSelectedCategory(String(v))}
-						className="flex shrink-0 gap-2"
-						aria-label="カテゴリ"
-					>
-						{filteredCategories.map((category) => (
-							<Radio
-								aria-label={category.name}
-								key={category.id}
-								value={category.name}
-								className={cn(
-									"shrink-0 rounded-lg border border-slate-300 p-2 p-3 text-sm transition-colors",
-									selectedCategory === category.name &&
-										"border-slate-500 bg-slate-500 font-semibold text-white",
-								)}
-							>
-								{category.name}
-							</Radio>
-						))}
-					</RadioGroup>
-					<Button className="flex shrink-0 rounded-lg border border-slate-300 p-3 text-sm">
-						＋新規カテゴリを追加
-					</Button>
-				</div>
+				<CategoryPicker
+					value={selectedCategory}
+					onChange={(v) => setSelectedCategory(v ?? "")}
+					categories={filteredCategories}
+					type={selectedTransactionType}
+				/>
 			)}
 
 			<div className="grid grid-cols-[1fr_auto] gap-2">
-				<TextField aria-label="金額" name="amount" type="decimal">
-					<Input
-						className="h-full w-full rounded-lg bg-slate-50 p-3"
-						placeholder="1,000"
-					/>
-					<FieldError />
-				</TextField>
-				<Button
-					type="submit"
-					className="flex aspect-square items-center justify-center rounded-lg bg-blue-light p-2"
-				>
-					<SendHorizontal color="#66B6FF" />
-				</Button>
+				<CustomInput
+					label="金額"
+					name="amount"
+					type="decimal"
+					placeholder="1,000"
+				/>
+				<SubmitButton />
 			</div>
 		</Form>
 	);

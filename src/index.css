@@ -10,13 +10,16 @@
 	--color-red-light: #ffe4ef;
 	--color-green-dark: #5fc88f;
 	--color-green-light: #def5e9;
+	--color-gray-dark: #191c32;
+	--color-gray: #f7f7fa;
 	--color-gray-light: #e5e7f3;
 	--color-ellipsis-orange: #ffc2c6;
 	--color-ellipsis-red: #ffe3c9;
 	--color-ellipsis-purple: #e8d5ff;
 	--color-ellipsis-blue: #d5e9ff;
-	--color-gray: #f7f7fa;
+
 	--color-alert: #ff6464;
+	--color-base: #191c32;
 }
 
 @layer utilities {
@@ -43,8 +46,18 @@
 
 :root {
 	font-family: "M PLUS Rounded 1c", system-ui, sans-serif;
+	color: var(--color-base);
 }
 
 input {
 	font-size: 16px;
+}
+
+.react-aria-ModalOverlay {
+	display: grid;
+	place-items: center;
+	background-color: rgba(0, 0, 0, 0.3);
+	position: fixed;
+	z-index: 20;
+	inset: 0;
 }

@@ -30,6 +30,17 @@ export async function getAllCategories() {
 	return res;
 }
 
+export async function updateCategory(id: number, name: string) {
+	const current = (await db.get(CATEGORIES_STORE_NAME, id)) as
+		| CategoryRecord
+		| undefined;
+	if (!current) return null;
+
+	const next: CategoryRecord = { ...current, name };
+	await db.put(CATEGORIES_STORE_NAME, next);
+	return next;
+}
+
 export async function deleteCategory(id: number) {
 	await db.delete(CATEGORIES_STORE_NAME, id);
 }
