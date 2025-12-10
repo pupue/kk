@@ -8,6 +8,7 @@ import { cn } from "../utils/cn";
 
 type Props = {
 	data: TransactionRecord;
+	isLast: boolean;
 };
 
 const borderStyle: Record<TransactionType, string> = {
@@ -16,7 +17,7 @@ const borderStyle: Record<TransactionType, string> = {
 	saving: "border-orange-dark",
 };
 
-export function TransactionListItem({ data }: Props) {
+export function TransactionListItem({ data, isLast }: Props) {
 	const max = 80;
 	const [x, setX] = useState(0);
 	const [isDeleting, setIsDeleting] = useState(false);
@@ -64,7 +65,10 @@ export function TransactionListItem({ data }: Props) {
 		>
 			<div
 				{...bind()}
-				className="relative z-10 flex touch-pan-y items-center justify-between gap-2 border-slate-100 border-b bg-white p-2"
+				className={cn(
+					"relative z-10 flex touch-pan-y items-center justify-between gap-2 bg-white p-2",
+					!isLast && "border-slate-100 border-b",
+				)}
 				style={{
 					transform: `translateX(${x}px)`,
 					transition:
@@ -73,14 +77,15 @@ export function TransactionListItem({ data }: Props) {
 			>
 				<div
 					className={cn(
-						"min-h-10 border-l-2 py-2 pl-2",
+						"min-h-10 border-l-2 px-4 py-2",
 						borderStyle[data.type],
 					)}
 				>
 					<span className="text-sm">{data.category}</span>
 				</div>
 				<span className="text-sm">
-					{data.type !== "income" && "- "}¥{data.amount.toLocaleString()}
+					{data.type === "expense" ? "- " : data.type === "saving" ? "△ " : ""}¥
+					{data.amount.toLocaleString()}
 				</span>
 			</div>
 

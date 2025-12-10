@@ -28,7 +28,7 @@ export function TypeSwitcher({ value, onChange }: Props) {
 	const idx = items.findIndex((x) => x.value === value);
 
 	return (
-		<div className="inline-block rounded-lg bg-slate-100 p-2">
+		<div className="inline-block rounded-lg bg-slate-100 p-1">
 			<RadioGroup
 				aria-label="種類"
 				value={value}

@@ -8,13 +8,20 @@ import { TypeSwitcher } from "./type-switcher";
 import { CustomInput } from "./ui/custom-input";
 import { SubmitButton } from "./ui/submit-button";
 
-export function TransactionForm() {
+type Props = {
+	scrollToBottom: () => void;
+};
+
+export function TransactionForm({ scrollToBottom }: Props) {
 	const { setTransactions, setSummary, categories } = useStore();
 	const [selectedTransactionType, setSelectedTransactionType] =
 		useState<TransactionType>("income");
 
 	async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault();
+		event.stopPropagation();
+
+		const form = event.currentTarget;
 
 		const formData = new FormData(event.currentTarget);
 		const amountInputValue = String(formData.get("amount") ?? "");
@@ -30,6 +37,8 @@ export function TransactionForm() {
 
 		setTransactions((prev) => [tx, ...prev]);
 		setSummary(summary);
+		scrollToBottom();
+		form.reset();
 	}
 
 	const [selectedCategory, setSelectedCategory] = useState<string>("");

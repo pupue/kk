@@ -42,6 +42,7 @@ export function CategoryPicker({ value, onChange, categories, type }: Props) {
 
 	async function handleUpdateCategory(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault();
+		event.stopPropagation();
 		if (!editCategory) return;
 		const form = event.currentTarget;
 
@@ -59,6 +60,8 @@ export function CategoryPicker({ value, onChange, categories, type }: Props) {
 
 	async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault();
+		event.stopPropagation();
+
 		const form = event.currentTarget;
 
 		const formData = new FormData(event.currentTarget);
@@ -83,7 +86,7 @@ export function CategoryPicker({ value, onChange, categories, type }: Props) {
 						key={category.id}
 						value={category.name}
 						className={cn(
-							"shrink-0 rounded-lg border border-slate-300 p-2 py-3 text-sm transition-colors",
+							"flex min-h-11 min-w-16 shrink-0 items-center justify-center rounded-lg border border-slate-300 p-2 text-sm transition-colors",
 							value === category.name &&
 								"border-slate-500 bg-slate-500 font-semibold text-white",
 						)}
@@ -94,9 +97,9 @@ export function CategoryPicker({ value, onChange, categories, type }: Props) {
 			</RadioGroup>
 
 			<DialogTrigger>
-				<Button className="flex shrink-0 items-center gap-2 rounded-lg border border-slate-300 p-3 text-sm">
+				<Button className="flex shrink-0 items-center gap-1 rounded-lg border border-slate-300 p-2 text-sm">
 					カテゴリの編集
-					<SquarePen color="var(--color-base)" size={16} />
+					<SquarePen color="var(--color-base)" size={14} />
 				</Button>
 				<Modal isDismissable className="w-full max-w-sm px-5">
 					<Dialog className="rounded-lg bg-white p-5">
@@ -142,15 +145,15 @@ export function CategoryPicker({ value, onChange, categories, type }: Props) {
 														<SubmitButton />
 													</div>
 												</Form>
-												<div className="mx-auto mt-2 grid w-4/5 grid-cols-2 gap-2">
+												<div className="mx-auto mt-4 grid w-4/5 grid-cols-2 gap-2">
 													<Button
-														className="rounded-lg border border-slate-300 p-2 text-sm"
+														className="min-h-11 rounded-lg border border-slate-300 p-2 text-sm"
 														onPress={() => setEditCategory(null)}
 													>
 														キャンセル
 													</Button>
 													<Button
-														className="rounded-lg bg-alert p-2 text-sm text-white"
+														className="min-h-11 rounded-lg bg-alert p-2 text-sm text-white"
 														onPress={handleDeleteCategory}
 													>
 														削除
@@ -166,7 +169,7 @@ export function CategoryPicker({ value, onChange, categories, type }: Props) {
 													{categories.map((category) => (
 														<Button
 															key={category.id}
-															className="rounded-lg border border-slate-300 p-2 text-sm"
+															className="min-h-11 min-w-16 rounded-lg border border-slate-300 p-2 text-sm"
 															onPress={() => setEditCategory(category)}
 														>
 															{category.name}
