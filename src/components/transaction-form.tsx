@@ -63,7 +63,7 @@ export function TransactionForm() {
 
 			<div className="grid grid-cols-[1fr_auto] gap-2">
 				<CustomInput
-					label="金額"
+					aria-label="金額"
 					name="amount"
 					type="decimal"
 					placeholder="1,000"
