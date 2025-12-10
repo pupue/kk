@@ -1,9 +1,10 @@
 import { openDB } from "idb";
 
 const INDEXED_DB_NAME = "kk-db";
-const INDEXED_DB_VERSION = 2;
+const INDEXED_DB_VERSION = 4;
 export const TRANSACTIONS_STORE_NAME = "transactions";
 export const SUMMARY_STORE_NAME = "summary";
+export const CATEGORIES_STORE_NAME = "categories";
 
 export const db = await openDB(INDEXED_DB_NAME, INDEXED_DB_VERSION, {
 	upgrade(db) {
@@ -16,6 +17,14 @@ export const db = await openDB(INDEXED_DB_NAME, INDEXED_DB_VERSION, {
 		}
 		if (!db.objectStoreNames.contains(SUMMARY_STORE_NAME)) {
 			db.createObjectStore(SUMMARY_STORE_NAME, { keyPath: "key" });
+		}
+		if (!db.objectStoreNames.contains(CATEGORIES_STORE_NAME)) {
+			const store = db.createObjectStore(CATEGORIES_STORE_NAME, {
+				keyPath: "id",
+				autoIncrement: true,
+			});
+			store.createIndex("type", "type");
+			store.createIndex("createdAt", "createdAt");
 		}
 	},
 });

@@ -2,16 +2,21 @@ import { useDrag } from "@use-gesture/react";
 import { useState } from "react";
 import { Button } from "react-aria-components";
 import { deleteTransactionMutation } from "../db/mutation";
-import type { TransactionRecord } from "../db/tx-repo";
+import type { TransactionRecord, TransactionType } from "../db/tx-repo";
 import { useStore } from "../hooks/useStore";
 import { cn } from "../utils/cn";
 
 type Props = {
 	data: TransactionRecord;
-	className?: string;
 };
 
-export function TransactionListItem({ data, className }: Props) {
+const borderStyle: Record<TransactionType, string> = {
+	income: "border-green-dark",
+	expense: "border-red-dark",
+	saving: "border-orange-dark",
+};
+
+export function TransactionListItem({ data }: Props) {
 	const max = 80;
 	const [x, setX] = useState(0);
 	const [isDeleting, setIsDeleting] = useState(false);
@@ -59,14 +64,24 @@ export function TransactionListItem({ data, className }: Props) {
 		>
 			<div
 				{...bind()}
-				className={cn("relative z-10 touch-pan-y p-4", className)}
+				className="relative z-10 flex touch-pan-y items-center justify-between gap-2 border-slate-100 border-b bg-white p-2"
 				style={{
 					transform: `translateX(${x}px)`,
 					transition:
 						x === 0 || x === -max ? "transform 180ms ease" : undefined,
 				}}
 			>
-				<span className="text-sm">¥{data.amount.toLocaleString()}</span>
+				<div
+					className={cn(
+						"min-h-10 border-l-2 py-2 pl-2",
+						borderStyle[data.type],
+					)}
+				>
+					<span className="text-sm">{data.category}</span>
+				</div>
+				<span className="text-sm">
+					{data.type !== "income" && "- "}¥{data.amount.toLocaleString()}
+				</span>
 			</div>
 
 			<Button
