@@ -5,7 +5,7 @@ type Props = {
 
 export function SummaryData({ balance, savingTotal }: Props) {
 	return (
-		<div>
+		<div className="break-all">
 			<div className="text-center font-bold text-2xl">
 				¥{balance.toLocaleString()}
 			</div>

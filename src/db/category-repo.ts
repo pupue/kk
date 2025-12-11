@@ -50,13 +50,19 @@ const DEFAULT_CATEGORIES: Record<
 	Exclude<TransactionType, "saving">,
 	string[]
 > = {
-	income: ["給料", "副業", "臨時収入", "その他"],
-	expense: ["食費", "日用品", "交際費", "生活費", "光熱費", "その他"],
+	income: ["給与", "副業", "臨時収入", "その他"],
+	expense: ["食費", "日用品", "交際費", "医療費", "光熱費", "その他"],
 };
 
+const DEFAULT_CATEGORIES_ENSURED_KEY = "defaultCategoriesEnsured";
 export async function ensureDefaultCategories() {
+	if (localStorage.getItem(DEFAULT_CATEGORIES_ENSURED_KEY)) return;
+
 	const existingCount = await db.count(CATEGORIES_STORE_NAME);
-	if (existingCount > 0) return;
+	if (existingCount > 0) {
+		localStorage.setItem(DEFAULT_CATEGORIES_ENSURED_KEY, "true");
+		return;
+	}
 
 	const now = Date.now();
 	const tx = db.transaction(CATEGORIES_STORE_NAME, "readwrite");

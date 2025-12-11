@@ -66,7 +66,7 @@ export function TransactionListItem({ data, isLast }: Props) {
 			<div
 				{...bind()}
 				className={cn(
-					"relative z-10 flex touch-pan-y items-center justify-between gap-2 bg-white p-2",
+					"relative z-10 grid touch-pan-y grid-cols-2 items-center gap-2 bg-white p-2",
 					!isLast && "border-slate-100 border-b",
 				)}
 				style={{
@@ -83,7 +83,7 @@ export function TransactionListItem({ data, isLast }: Props) {
 				>
 					<span className="text-sm">{data.category}</span>
 				</div>
-				<span className="text-sm">
+				<span className="break-all text-right text-sm">
 					{data.type === "expense" ? "- " : data.type === "saving" ? "△ " : ""}¥
 					{data.amount.toLocaleString()}
 				</span>

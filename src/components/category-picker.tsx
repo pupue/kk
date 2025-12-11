@@ -12,6 +12,7 @@ import {
 import {
 	addCategory,
 	type CategoryRecord,
+	deleteCategory,
 	updateCategory,
 } from "../db/category-repo";
 import type { TransactionType } from "../db/tx-repo";
@@ -31,8 +32,10 @@ export function CategoryPicker({ value, onChange, categories, type }: Props) {
 	const { setCategories } = useStore();
 	const [editCategory, setEditCategory] = useState<CategoryRecord | null>(null);
 
-	function handleDeleteCategory() {
+	async function handleDeleteCategory() {
+		if (!editCategory) return;
 		if (window.confirm("本当に削除しますか？")) {
+			await deleteCategory(editCategory.id);
 			setCategories((prev) =>
 				prev.filter((category) => category.id !== editCategory?.id),
 			);
@@ -73,95 +76,105 @@ export function CategoryPicker({ value, onChange, categories, type }: Props) {
 	}
 
 	return (
-		<div className="flex gap-2 overflow-x-scroll">
-			<RadioGroup
-				value={value}
-				onChange={onChange}
-				className="flex shrink-0 gap-2"
-				aria-label="カテゴリ"
-			>
-				{categories.map((category) => (
-					<Radio
-						aria-label={category.name}
-						key={category.id}
-						value={category.name}
-						className={cn(
-							"flex min-h-11 min-w-16 shrink-0 items-center justify-center rounded-lg border border-slate-300 p-2 text-sm transition-colors",
-							value === category.name &&
-								"border-slate-500 bg-slate-500 font-semibold text-white",
-						)}
-					>
-						{category.name}
-					</Radio>
-				))}
-			</RadioGroup>
-
+		<div className="flex gap-2 overflow-x-hidden">
+			{categories.length > 0 && (
+				<RadioGroup
+					value={value}
+					onChange={onChange}
+					className="flex shrink-0 gap-2"
+					aria-label="カテゴリ"
+				>
+					{categories.map((category) => (
+						<Radio
+							aria-label={category.name}
+							key={category.id}
+							value={category.name}
+							className={cn(
+								"flex min-h-11 min-w-16 items-center justify-center whitespace-nowrap rounded-lg border p-2 text-sm transition-colors",
+								value === category.name
+									? "border-blue font-semibold text-blue"
+									: "border-slate-300",
+							)}
+						>
+							{category.name}
+						</Radio>
+					))}
+				</RadioGroup>
+			)}
 			<DialogTrigger>
-				<Button className="flex shrink-0 items-center gap-1 rounded-lg border border-slate-300 p-2 text-sm">
+				<Button className="flex shrink-0 items-center gap-1 rounded-lg border border-slate-300 border-dashed p-2 text-sm">
 					カテゴリの編集
 					<SquarePen color="var(--color-base)" size={14} />
 				</Button>
-				<Modal isDismissable className="w-full max-w-sm px-5">
-					<Dialog className="rounded-lg bg-white p-5">
+				<Modal isDismissable className="w-full max-w-sm p-5">
+					<Dialog className="max-h-[80vh] overflow-y-scroll rounded-lg bg-white p-5">
 						{({ close }) => (
 							<>
-								<Button onPress={close} className="ml-auto flex p-2">
+								<Button
+									onPress={() => {
+										setEditCategory(null);
+										close();
+									}}
+									className="ml-auto flex p-2"
+								>
 									<X color="var(--color-base)" size={16} />
 								</Button>
-								<div className="grid gap-5 divide-y divide-slate-200">
-									<Form
-										onSubmit={handleSubmit}
-										className="!rounded-none !shadow-none !p-0 !pb-5"
-									>
-										<div>
-											<SectionTitle>
-												新規追加するカテゴリを入力してください
-											</SectionTitle>
+								{editCategory ? (
+									<div>
+										<SectionTitle>カテゴリを編集</SectionTitle>
+										<Form
+											onSubmit={handleUpdateCategory}
+											className="!rounded-none !shadow-none !p-0"
+										>
 											<div className="grid grid-cols-[1fr_auto] gap-2">
 												<CustomInput
-													aria-label="カテゴリ名"
-													name="categoryName"
+													aria-label="カテゴリ名を編集"
+													name="editCategoryName"
 													type="text"
-													placeholder="カテゴリ名"
+													defaultValue={editCategory.name}
 												/>
 												<SubmitButton />
 											</div>
+										</Form>
+										<div className="mx-auto mt-4 grid w-4/5 grid-cols-2 gap-2">
+											<Button
+												className="min-h-11 rounded-lg border border-slate-300 p-2 text-sm"
+												onPress={() => setEditCategory(null)}
+											>
+												キャンセル
+											</Button>
+											<Button
+												className="min-h-11 rounded-lg bg-alert p-2 text-sm text-white"
+												onPress={handleDeleteCategory}
+											>
+												削除
+											</Button>
 										</div>
-									</Form>
-									<div>
-										{editCategory ? (
+									</div>
+								) : (
+									<div className="grid gap-8 divide-y divide-slate-200">
+										<Form
+											onSubmit={handleSubmit}
+											className="!rounded-none !shadow-none !p-0 !pb-8"
+										>
 											<div>
-												<Form
-													onSubmit={handleUpdateCategory}
-													className="!rounded-none !shadow-none !p-0"
-												>
-													<div className="grid grid-cols-[1fr_auto] gap-2">
-														<CustomInput
-															aria-label="カテゴリ名を編集"
-															name="editCategoryName"
-															type="text"
-															defaultValue={editCategory.name}
-														/>
-														<SubmitButton />
-													</div>
-												</Form>
-												<div className="mx-auto mt-4 grid w-4/5 grid-cols-2 gap-2">
-													<Button
-														className="min-h-11 rounded-lg border border-slate-300 p-2 text-sm"
-														onPress={() => setEditCategory(null)}
-													>
-														キャンセル
-													</Button>
-													<Button
-														className="min-h-11 rounded-lg bg-alert p-2 text-sm text-white"
-														onPress={handleDeleteCategory}
-													>
-														削除
-													</Button>
+												<SectionTitle>
+													新規追加するカテゴリを入力してください
+												</SectionTitle>
+												<div className="grid grid-cols-[1fr_auto] gap-2">
+													<CustomInput
+														aria-label="カテゴリ名"
+														name="categoryName"
+														type="text"
+														placeholder="カテゴリ名"
+													/>
+													<SubmitButton />
 												</div>
 											</div>
-										) : (
-											<div>
+										</Form>
+
+										{categories.length > 0 && (
+											<div className="pb-5">
 												<SectionTitle>
 													編集するカテゴリを選択してください
 												</SectionTitle>
@@ -178,15 +191,8 @@ export function CategoryPicker({ value, onChange, categories, type }: Props) {
 												</div>
 											</div>
 										)}
-
-										{/* <Button
-                        onPress={handleDeleteCategory}
-                        className="mt-4 flex mx-auto text-sm bg-alert px-4 py-2 rounded-lg text-white"
-                      >
-                        削除
-                      </Button> */}
 									</div>
-								</div>
+								)}
 							</>
 						)}
 					</Dialog>
