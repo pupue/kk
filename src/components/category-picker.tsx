@@ -76,7 +76,7 @@ export function CategoryPicker({ value, onChange, categories, type }: Props) {
 	}
 
 	return (
-		<div className="flex gap-2 overflow-x-hidden">
+		<div className="flex gap-2 overflow-x-scroll">
 			{categories.length > 0 && (
 				<RadioGroup
 					value={value}
